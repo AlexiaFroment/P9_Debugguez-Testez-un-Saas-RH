@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "jest --noStackTrace --silent",
+    "test": "jest --noStackTrace --silent=false",
     "t:cov": "jest --coverage"
   },
   "jest": {
