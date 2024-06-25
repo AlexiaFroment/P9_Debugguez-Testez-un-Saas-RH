@@ -15,13 +15,24 @@ export default class NewBill {
     // QS DATA-TESTID=FILE => INPUT FILE DOWNLOAD
     const file = this.document.querySelector(`input[data-testid="file"]`);
     //METHOD TO ADD FILE
-
     file.addEventListener("change", this.handleChangeFile);
     this.fileUrl = null;
     this.fileName = null;
     this.billId = null;
     new Logout({ document, localStorage, onNavigate });
   }
+
+  genarateRandomValue = (length) => {
+    const charact =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let randomValue = "";
+    const charactLength = charact.length;
+    for (let i = 0; i < length; i++) {
+      randomValue += charact.charAt(Math.floor(Math.random() * charactLength));
+    }
+    return randomValue;
+  };
+
   handleChangeFile = (e) => {
     e.preventDefault();
     const errorMessage = this.document.getElementById("file-error");
@@ -30,6 +41,19 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
     const extension = fileName.split(".").pop().toLowerCase();
+    let fileRename = "";
+    // RENAME THE FILE SEND TO THE BACKEND
+    if (fileName) {
+      fileRename = `bill_${this.genarateRandomValue(6)}.${extension}`;
+    }
+    console.log(
+      "filePath",
+      filePath,
+      "fileName",
+      fileName,
+      "fileRename",
+      fileRename
+    );
 
     // SET UP A CONDITIONNAL RENDERING ON THE FILE TYPE RECEIVED, I CAN RECEPT ONLY .JPG, .JPEG, .PNG
     if (extension !== "jpg" && extension !== "jpeg" && extension !== "png") {
@@ -43,7 +67,6 @@ export default class NewBill {
     const email = JSON.parse(localStorage.getItem("user")).email;
     formData.append("file", file);
     formData.append("email", email);
-    console.log("formData", formData);
 
     // SEND REQUEST TO CREATE A NEW BILL (DATA: MAIL AND FILE)
     this.store
@@ -55,21 +78,19 @@ export default class NewBill {
         },
       })
       .then(({ fileUrl, key }) => {
-        console.log(fileUrl);
         this.billId = key;
         this.fileUrl = fileUrl;
-        this.fileName = fileName;
+        // this.fileRename = fileRename;
+        this.fileName = fileRename;
+        console.log(fileUrl, key, fileRename, this.fileName);
       })
       .catch((error) => console.error(error));
   };
 
   handleSubmit = (e) => {
-    e.preventDefault();
+    console.log("filename= fileRename", this.fileName, "✅");
 
-    // console.log(
-    //   'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-    //   e.target.querySelector(`input[data-testid="datepicker"]`).value
-    // );
+    e.preventDefault();
 
     const errorMessage = this.document.getElementById("file-error");
     if (errorMessage.style.display === "block") {

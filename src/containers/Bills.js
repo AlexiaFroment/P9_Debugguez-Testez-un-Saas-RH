@@ -7,12 +7,17 @@ export default class {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
+
+    //BTN NEW BILL IN THE DASHBOARD => WHEN I CLICK ON IT, I WILL NAVIGATE TO THE NEW BILL PAGE
     const buttonNewBill = document.querySelector(
       `button[data-testid="btn-new-bill"]`
     );
     if (buttonNewBill)
       buttonNewBill.addEventListener("click", this.handleClickNewBill);
+
+    //ICON EYE IN THE TABLE => WHEN I CLICK ON IT, I WILL OPEN THE MODAL AND DISPLAY THE BILL PROOF
     const iconEye = document.querySelectorAll(`div[data-testid="icon-eye"]`);
+
     if (iconEye)
       iconEye.forEach((icon) => {
         icon.addEventListener("click", () => this.handleClickIconEye(icon));
@@ -45,6 +50,10 @@ export default class {
         .list()
         .then((snapshot) => {
           const bills = snapshot.map((doc) => {
+            const antiChrono = (a, b) => (a.date < b.date ? 1 : -1);
+            snapshot.sort(antiChrono);
+            // console.log({ snapshot });
+
             try {
               return {
                 ...doc,
@@ -62,7 +71,8 @@ export default class {
               };
             }
           });
-          console.log("length", bills.length);
+
+          // console.log("length", bills.length);
           return bills;
         });
     }
