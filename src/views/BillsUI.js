@@ -1,8 +1,8 @@
-import VerticalLayout from "./VerticalLayout.js";
-import ErrorPage from "./ErrorPage.js";
-import LoadingPage from "./LoadingPage.js";
+import VerticalLayout from "./VerticalLayout.js"
+import ErrorPage from "./ErrorPage.js"
+import LoadingPage from "./LoadingPage.js"
 
-import Actions from "./Actions.js";
+import Actions from "./Actions.js"
 
 // const antiChrono = (a, b) => (a < b ? 1 : -1);
 const row = (bill) => {
@@ -17,20 +17,20 @@ const row = (bill) => {
         ${Actions(bill.fileUrl)}
       </td>
     </tr>
-    `;
-};
+    `
+}
 
 // CREATE THE BILLS TABLE
 const rows = (data) => {
-  return data && data.length ? data.map((bill) => row(bill)).join("") : "";
-};
+  return data && data.length ? data.map((bill) => row(bill)).join("") : ""
+}
 
 // CREATE THE DASHBOARD BILLS
 export default ({ data: bills, loading, error }) => {
-  console.log({ bills });
+  // console.log({ bills });
 
   const modal = () => `
-    <div class="modal fade" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="modaleFile" data-testid="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -44,12 +44,12 @@ export default ({ data: bills, loading, error }) => {
         </div>
       </div>
     </div>
-  `;
+  `
 
   if (loading) {
-    return LoadingPage();
+    return LoadingPage()
   } else if (error) {
-    return ErrorPage(error);
+    return ErrorPage(error)
   }
 
   // DASHBOARD "MES NOTES DE FRAIS" => WHEN I CLICK BTN NEW BILL I NAVIGATE TO NEW BILL PAGE
@@ -80,5 +80,5 @@ export default ({ data: bills, loading, error }) => {
         </div>
       </div>
       ${modal()}
-    </div>`;
-};
+    </div>`
+}
