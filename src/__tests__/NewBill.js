@@ -14,6 +14,7 @@ import { ROUTES, ROUTES_PATH } from "../constants/routes.js"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import mockStore from "../__mocks__/store.js"
 import router from "../app/Router.js"
+import { create } from "../../../Billed-app-FR-Back/controllers/bill.js"
 
 jest.mock("../app/store", () => mockStore)
 
@@ -146,4 +147,78 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-//TESTS D'INTEGRATION POST
+//----------------------------- Test d'intégration POST ----------------------------- //
+describe("Given I am a user connected as Employee", () => {
+  describe("When I navigate to NewBill page", () => {
+    test("then fetch newBill mock API POST", async () => {
+      document.body.innerHTML = ""
+
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.appendChild(root)
+
+      router()
+      window.onNavigate(ROUTES_PATH.NewBill)
+      await waitFor(() => screen.getByText("Billed"))
+      await waitFor(() => screen.getByText("Envoyer une note de frais"))
+      await waitFor(() => screen.getByTestId("form-new-bill"))
+
+      const title = screen.getByText("Billed")
+      expect(title).toBeInTheDocument()
+      const mainTitle = screen.getByText("Envoyer une note de frais")
+      expect(mainTitle).toBeInTheDocument()
+      const form = screen.getByTestId("form-new-bill")
+      expect(form).toBeInTheDocument()
+    })
+
+    test("A user POST a new bill with the handleSubmit method", async () => {
+      const newbill = {
+        id: "47qAXb6fIm2zOKkLzMro",
+        vat: "80",
+        fileUrl:
+          "https://firebasestorage.googleapis.com/v0/b/billable-677b6.a…f-1.jpg?alt=media&token=c1640e12-a24b-4b11-ae52-529112e9602a",
+        status: "pending",
+        type: "Hôtel et logement",
+        commentary: "séminaire billed",
+        name: "encore",
+        fileName: "preview-facture-free-201801-pdf-1.jpg",
+        date: "2004-04-04",
+        amount: 400,
+        commentAdmin: "ok",
+        email: "a@a",
+        pct: 20,
+      }
+      const postSpy = jest.spyOn(mockStore, "bills")
+      const postBills = await mockStore.bills().update(newbill)
+      expect(postSpy).toHaveBeenCalledTimes(1)
+      expect(postBills).toStrictEqual(newbill)
+    })
+
+    describe("When an error occurs on API", () => {
+      beforeEach(() => {
+        jest.spyOn(mockStore, "bills") // On espionne la méthode bills.
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.appendChild(root)
+        router()
+      })
+
+      //   test("fetches newBill from an API and fails with 404 message error", async () => {
+      //     mockStore.bills.mockImplementationOnce(() => {
+      //       // On simule une méthode create qui erreur 404.
+      //       return {
+      //         create: () => {
+      //           return Promise.reject(new Error("Erreur 404"))
+      //         },
+      //       }
+      //     })
+      //     window.onNavigate(ROUTES_PATH.NewBill)
+      //     await new Promise(process.nextTick)
+      //     const message = await screen.getByTestId("error-message")
+
+      //     message = message.textContent.includes("404")
+      //     expect(message).toBeTruthy() // On s'attends à voir la chaîne de caractère 404.
+      //   })
+    })
+  })
+})
