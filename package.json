@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "test": "jest --noStackTrace --silent=false",
-    "t:cov": "jest --coverage --watch --verbose"
+    "t:cov": "jest --coverage --verbose",
+    "test": "jest --coverage --watch --noStackTrace --silent"
   },
   "jest": {
     "verbose": false,

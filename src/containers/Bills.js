@@ -34,13 +34,23 @@ export default class {
     const billUrl = icon.getAttribute("data-bill-url")
     console.log("billUrl", billUrl, "ouvre la modale", "✅")
 
+    const modal = document.querySelector("#modaleFile");
     const imgWidth = Math.floor($("#modaleFile").width() * 0.5)
-    $("#modaleFile")
-      .find(".modal-body")
-      .html(
-        `<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`
-      )
-    $("#modaleFile").modal("show")
+    
+// Trouver le corps de la modale et y insérer le contenu HTML
+const modalBody = modal.querySelector(".modal-body");
+modalBody.innerHTML = `
+    <div style='text-align: center;' class="bill-proof-container">
+        <img width=${imgWidth} src=${billUrl} alt="Bill" />
+    </div>
+`;
+
+// Afficher la modale
+modal.style.display = "block"; // Montrer la modale
+
+// Simuler l'ouverture de la modale si tu as un style particulier pour cela
+modal.classList.add('show'); // Ajoute une classe 'show' pour les styles CSS si nécessaire
+   
   }
 
   getBills = () => {

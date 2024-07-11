@@ -1,4 +1,4 @@
-import VerticalLayout from "./VerticalLayout.js";
+import VerticalLayout from "./VerticalLayout.js"
 
 export default () => {
   return `
@@ -30,7 +30,7 @@ export default () => {
                 
                   <div class="col-half">
                     <label for="expense-name" class="bold-label">Nom de la dépense</label>
-                    <input type="text" class="form-control blue-border" data-testid="expense-name" placeholder="Vol Paris Londres" />
+                    <input required type="text" class="form-control blue-border" data-testid="expense-name" placeholder="Vol Paris Londres" />
                   </div>
 
                
@@ -86,5 +86,5 @@ export default () => {
         </div>
       </div>
     </div>
-  `;
-};
+  `
+}

@@ -4,6 +4,7 @@ import pctIcon from '../assets/svg/pct.js'
 import eyeWhite from '../assets/svg/eye_white.js'
 import { formatDate } from '../app/format.js'
 
+// MODAL TO DISPLAY THE FILE JOINED
 export const modal = () => (`
   <div class="modal fade" id="modaleFileAdmin1" data-testid="modaleFileAdmin" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -22,7 +23,7 @@ export const modal = () => (`
   `)
 
 export default (bill) => {
-
+// DISPLAY THE BILL'S DATA ON THIS PART OF PAGE, DISPLAY A DIFFERENT BOARD DEPENDING ON BILL'S STATUS   
   return (`
     <div class="container dashboard-form" data-testid="dashboard-form">
       <div class="row">

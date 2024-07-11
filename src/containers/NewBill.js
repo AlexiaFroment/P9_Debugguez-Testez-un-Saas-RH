@@ -3,24 +3,20 @@ import Logout from "./Logout.js";
 
 export default class NewBill {
   constructor({ document, onNavigate, store, localStorage }) {
-    this.document = document;
-    this.onNavigate = onNavigate;
-    this.store = store;
-    // QS FORM NEWBILL
-    const formNewBill = this.document.querySelector(
-      `form[data-testid="form-new-bill"]`
-    );
-    // ADDEVENTLISTENER ON SUBMIT
-    formNewBill.addEventListener("submit", this.handleSubmit);
-    // QS DATA-TESTID=FILE => INPUT FILE DOWNLOAD
-    const file = this.document.querySelector(`input[data-testid="file"]`);
-    //METHOD TO ADD FILE
-    file.addEventListener("change", this.handleChangeFile);
-    this.fileUrl = null;
-    this.fileName = null;
-    this.billId = null;
-    new Logout({ document, localStorage, onNavigate });
+    this.document = document
+    this.onNavigate = onNavigate
+    this.store = store
+    const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`)
+    formNewBill.addEventListener("submit", this.handleSubmit)
+    const file = this.document.querySelector(`input[data-testid="file"]`)
+    file.addEventListener("change", this.handleChangeFile)
+    this.fileUrl = null
+    this.fileName = null
+    this.billId = null
+    new Logout({ document, localStorage, onNavigate })
   }
+
+
 
   genarateRandomValue = (length) => {
     const charact =
