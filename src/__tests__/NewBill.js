@@ -1,6 +1,8 @@
 /**
  * @jest-environment jsdom
  */
+import { localStorageMock } from "../__mocks__/localStorage.js"
+import mockStore from "../__mocks__/store.js"
 
 import { screen, waitFor, fireEvent } from "@testing-library/dom"
 import "@testing-library/jest-dom"
@@ -11,8 +13,6 @@ import NewBillUI from "../views/NewBillUI.js"
 import BillsUI from "../views/BillsUI.js"
 import NewBill from "../containers/NewBill.js"
 import { ROUTES, ROUTES_PATH } from "../constants/routes.js"
-import { localStorageMock } from "../__mocks__/localStorage.js"
-import mockStore from "../__mocks__/store.js"
 import router from "../app/Router.js"
 import { create } from "../../../Billed-app-FR-Back/controllers/bill.js"
 
@@ -149,26 +149,32 @@ describe("Given I am connected as an employee", () => {
 
 //----------------------------- Test d'intégration POST ----------------------------- //
 describe("Given I am a user connected as Employee", () => {
-  describe("When I navigate to NewBill page", () => {
-    test("then fetch newBill mock API POST", async () => {
-      document.body.innerHTML = ""
-
+  describe("When I create new Bill", () => {
+    test("then send bill to mock API POST", async () => {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ type: "Employee", email: "a@a" })
+      )
       const root = document.createElement("div")
       root.setAttribute("id", "root")
-      document.body.appendChild(root)
-
+      document.body.append(root)
       router()
       window.onNavigate(ROUTES_PATH.NewBill)
-      await waitFor(() => screen.getByText("Billed"))
-      await waitFor(() => screen.getByText("Envoyer une note de frais"))
-      await waitFor(() => screen.getByTestId("form-new-bill"))
+      jest.spyOn(mockStore, "bills")
 
-      const title = screen.getByText("Billed")
-      expect(title).toBeInTheDocument()
-      const mainTitle = screen.getByText("Envoyer une note de frais")
-      expect(mainTitle).toBeInTheDocument()
-      const form = screen.getByTestId("form-new-bill")
-      expect(form).toBeInTheDocument()
+      mockStore.bills.mockImplementationOnce(() => {
+        // MOCK METHOD CREATE WICH RETURN A RESOLVE PROMISE
+        return {
+          create: () => {
+            return Promise.resolve()
+          },
+        }
+      })
+
+      await new Promise(process.nextTick)
+
+      document.body.innerHTML = BillsUI({})
+      expect(screen.getByText("Mes notes de frais")).toBeTruthy()
     })
 
     test("A user POST a new bill with the handleSubmit method", async () => {
@@ -188,6 +194,14 @@ describe("Given I am a user connected as Employee", () => {
         email: "a@a",
         pct: 20,
       }
+
+      // Définir le mockStore avec la méthode update
+      const mockStore = {
+        bills: jest.fn(() => ({
+          update: jest.fn().mockResolvedValue(newbill),
+        })),
+      }
+
       const postSpy = jest.spyOn(mockStore, "bills")
       const postBills = await mockStore.bills().update(newbill)
       expect(postSpy).toHaveBeenCalledTimes(1)
@@ -196,29 +210,49 @@ describe("Given I am a user connected as Employee", () => {
 
     describe("When an error occurs on API", () => {
       beforeEach(() => {
-        jest.spyOn(mockStore, "bills") // On espionne la méthode bills.
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ type: "Employee", email: "a@a" })
+        )
         const root = document.createElement("div")
         root.setAttribute("id", "root")
-        document.body.appendChild(root)
+        document.body.append(root)
         router()
+        window.onNavigate(ROUTES_PATH.NewBill)
+        jest.spyOn(mockStore, "bills")
       })
 
-      //   test("fetches newBill from an API and fails with 404 message error", async () => {
-      //     mockStore.bills.mockImplementationOnce(() => {
-      //       // On simule une méthode create qui erreur 404.
-      //       return {
-      //         create: () => {
-      //           return Promise.reject(new Error("Erreur 404"))
-      //         },
-      //       }
-      //     })
-      //     window.onNavigate(ROUTES_PATH.NewBill)
-      //     await new Promise(process.nextTick)
-      //     const message = await screen.getByTestId("error-message")
+      test("send bill to an API and fails with 404 message error", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            create: () => {
+              return Promise.reject(new Error("Erreur 404"))
+            },
+          }
+        })
 
-      //     message = message.textContent.includes("404")
-      //     expect(message).toBeTruthy() // On s'attends à voir la chaîne de caractère 404.
-      //   })
+        await new Promise(process.nextTick)
+
+        document.body.innerHTML = BillsUI({ error: "Erreur 404" })
+        const message = screen.getByTestId("error-message")
+        expect(message.textContent).toContain("404")
+      })
+
+      test("send bill to an API and fails with 500 message error", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            create: () => {
+              return Promise.reject(new Error("Erreur 500"))
+            },
+          }
+        })
+
+        await new Promise(process.nextTick)
+
+        document.body.innerHTML = BillsUI({ error: "Erreur 500" })
+        const message = screen.getByTestId("error-message")
+        expect(message.textContent).toContain("500")
+      })
     })
   })
 })

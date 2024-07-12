@@ -7,7 +7,6 @@ export default class {
     this.document = document
     this.onNavigate = onNavigate
     this.store = store
-    // console.log(this.store)
 
     //BTN NEW BILL IN THE DASHBOARD => WHEN I CLICK ON IT, I WILL NAVIGATE TO THE NEW BILL PAGE
     const buttonNewBill = document.querySelector(
@@ -18,7 +17,6 @@ export default class {
 
     //ICON EYE IN THE TABLE => WHEN I CLICK ON IT, I WILL OPEN THE MODAL AND DISPLAY THE BILL PROOF
     const iconEye = document.querySelectorAll(`div[data-testid="icon-eye"]`)
-
     if (iconEye)
       iconEye.forEach((icon) => {
         icon.addEventListener("click", () => this.handleClickIconEye(icon))
@@ -32,25 +30,13 @@ export default class {
 
   handleClickIconEye = (icon) => {
     const billUrl = icon.getAttribute("data-bill-url")
-    console.log("billUrl", billUrl, "ouvre la modale", "✅")
-
-    const modal = document.querySelector("#modaleFile");
     const imgWidth = Math.floor($("#modaleFile").width() * 0.5)
-    
-// Trouver le corps de la modale et y insérer le contenu HTML
-const modalBody = modal.querySelector(".modal-body");
-modalBody.innerHTML = `
-    <div style='text-align: center;' class="bill-proof-container">
-        <img width=${imgWidth} src=${billUrl} alt="Bill" />
-    </div>
-`;
-
-// Afficher la modale
-modal.style.display = "block"; // Montrer la modale
-
-// Simuler l'ouverture de la modale si tu as un style particulier pour cela
-modal.classList.add('show'); // Ajoute une classe 'show' pour les styles CSS si nécessaire
-   
+    $("#modaleFile")
+      .find(".modal-body")
+      .html(
+        `<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`
+      )
+    $("#modaleFile").modal("show")
   }
 
   getBills = () => {
@@ -62,7 +48,6 @@ modal.classList.add('show'); // Ajoute une classe 'show' pour les styles CSS si 
           const bills = snapshot.map((doc) => {
             const antiChrono = (a, b) => (a.date < b.date ? 1 : -1)
             snapshot.sort(antiChrono)
-            // console.log({ snapshot })
 
             try {
               return {
@@ -73,7 +58,7 @@ modal.classList.add('show'); // Ajoute une classe 'show' pour les styles CSS si 
             } catch (e) {
               // if for some reason, corrupted data was introduced, we manage here failing formatDate function
               // log the error and return unformatted date in that case
-              // console.log(e, "for", doc)
+              console.log(e, "for", doc)
               return {
                 ...doc,
                 date: doc.date,

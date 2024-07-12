@@ -13,7 +13,10 @@ import { localStorageMock } from "../__mocks__/localStorage.js"
 import mockStore from "../__mocks__/store.js"
 import router from "../app/Router.js"
 
-jest.mock("../app/store", () => mockStore)
+jest.mock("../app/store", () => ({
+  __esModule: true,
+  default: mockStore,
+}))
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
@@ -56,27 +59,24 @@ describe("Given I am connected as an employee", () => {
     })
 
     test("Then the modal should open and display supporting document when I click on IconEye", () => {
-      const modal = document.createElement("div")
-      modal.setAttribute("data-testid", "modaleFile")
-      modal.style.display = "none"
-      document.body.appendChild(modal)
+      // MOCK MODAL
+      $.fn.modal = jest.fn()
 
-      const eyeIcons = screen.getAllByTestId("icon-eye")
+      const eyeIcon = screen.getAllByTestId("icon-eye")
 
-      // Mock de la fonction handleClickIconEye
+      // MOCK HANDLECLICKICONEYE FUNCTION
       const handleShowModalFile = jest.fn((e) => {
-        modal.style.display = "block"
         billsPage.handleClickIconEye(e)
       })
 
-      // Listener sur les icônes de l'oeil
-      eyeIcons.forEach((icon) => {
+      eyeIcon.forEach((icon) => {
         icon.addEventListener("click", () => handleShowModalFile(icon))
         userEvent.click(icon)
         expect(handleShowModalFile).toHaveBeenCalled()
       })
 
-      expect(modal.style.display).toEqual("block")
+      const modal = $("#modaleFile")
+      expect(modal.css("display")).toEqual("block")
     })
 
     test("Then, loading page should be rendered", () => {
@@ -128,7 +128,6 @@ describe("Given I am a user connected as Employee", () => {
         window.onNavigate(ROUTES_PATH.Bills)
         await new Promise(process.nextTick) // On attends que toutes les tâches soient exécutées.
         const messages = await screen.getAllByTestId("error-message")
-        console.log("🌞messagesBill", messages.textContent)
 
         const message = messages.find((msg) => msg.textContent.includes("404"))
         expect(message).toBeTruthy() // On s'attends à voir la chaîne de caractère 404.
