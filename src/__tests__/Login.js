@@ -244,7 +244,7 @@ describe("Given that I am a user on login page", () => {
   })
 })
 
-// TEST D'INTEGATION
+// --------------------------------------------------------------------------------TEST D'INTEGATION-------------------------------------------------------------------------------- //
 describe("integration login", () => {
   beforeEach(() => {
     // Réinitialiser localStorage avant chaque test

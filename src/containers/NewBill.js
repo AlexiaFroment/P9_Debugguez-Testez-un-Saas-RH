@@ -12,6 +12,7 @@ export default class NewBill {
     formNewBill.addEventListener("submit", this.handleSubmit)
     const file = this.document.querySelector(`input[data-testid="file"]`)
     file.addEventListener("change", this.handleChangeFile)
+
     this.fileUrl = null
     this.fileName = null
     this.billId = null
@@ -20,47 +21,47 @@ export default class NewBill {
 
   handleChangeFile = (e) => {
     e.preventDefault()
+    const fileInput = this.document.querySelector("input[data-testid='file']")
     const errorMessage = this.document.getElementById("file-error")
-    const file = this.document.querySelector(`input[data-testid="file"]`)
-      .files[0]
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length - 1]
+    const file = fileInput.files[0]
+    const fileName = file ? file.name : ""
     const extension = fileName.split(".").pop().toLowerCase()
 
     // SET UP A CONDITIONNAL RENDERING ON THE FILE TYPE RECEIVED, I CAN RECEPT ONLY .JPG, .JPEG, .PNG
-    if (extension !== "jpg" && extension !== "jpeg" && extension !== "png") {
+    const fileAcceptedFormats = ["jpg", "jpeg", "png"]
+
+    if (!file || fileAcceptedFormats.indexOf(extension) === -1) {
       errorMessage.style.display = "block"
+      fileInput.value = ""
     } else {
       errorMessage.style.display = "none"
+
+      // SEND DATA (MAIL AND FILE)
+      const formData = new FormData()
+      const email = JSON.parse(localStorage.getItem("user")).email
+      formData.append("file", file)
+      formData.append("email", email)
+
+      // SEND REQUEST TO CREATE A NEW BILL (DATA: MAIL AND FILE)
+      this.store
+        .bills()
+        .create({
+          data: formData,
+          headers: {
+            noContentType: true,
+          },
+        })
+        .then(({ fileUrl, key }) => {
+          console.log("fileUrl", fileUrl)
+          this.billId = key
+          this.fileUrl = fileUrl
+          this.fileName = fileName
+        })
+        .catch((error) => console.error(error))
     }
-
-    // SEND DATA (MAIL AND FILE)
-    const formData = new FormData()
-    const email = JSON.parse(localStorage.getItem("user")).email
-    formData.append("file", file)
-    formData.append("email", email)
-
-    // SEND REQUEST TO CREATE A NEW BILL (DATA: MAIL AND FILE)
-    this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true,
-        },
-      })
-      .then(({ fileUrl, key }) => {
-        console.log("fileUrl", fileUrl)
-        this.billId = key
-        this.fileUrl = fileUrl
-        this.fileName = fileName
-      })
-      .catch((error) => console.error(error))
   }
 
   handleSubmit = (e) => {
-    // console.log("filename= fileRename", this.fileName, "✅");
-
     e.preventDefault()
 
     const errorMessage = this.document.getElementById("file-error")

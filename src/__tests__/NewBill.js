@@ -147,7 +147,7 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-//----------------------------- Test d'intégration POST ----------------------------- //
+//--------------------------------------------------- Test d'intégration POST --------------------------------------------------- //
 describe("Given I am a user connected as Employee", () => {
   describe("When I create new Bill", () => {
     test("then send bill to mock API POST", async () => {
